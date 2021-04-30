@@ -1,0 +1,214 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    var bookingList = (List<dynamic>)ViewData["bookings"];
+    var roomList = (List<Room>)ViewData["rooms"];
+    string message = ViewData["msg"] == null ? "" : ViewData["msg"].ToString();
+}
+
+<div class="row ">
+    <div class="col-12  align-self-center">
+        <div class="sub-header mt-3 py-3 align-self-center d-sm-flex w-100 rounded">
+            <div class="w-sm-100 mr-auto"><h4 class="mb-0">Booking</h4></div>
+        </div>
+    </div>
+</div>
+<div class="row ">
+    <div class="col-10 col-lg-10  col-xl-10 mt-10">
+        <div class="card bg-light">
+            <div class="card-header">
+                Current Booking List
+
+            </div>
+            <div class="card-body">
+
+
+                <div class="table-responsive">
+                    <table class="table layout-primary bordered" id="bookingTbl">
+                        <thead>
+                            <tr>
+
+                                <th scope="col">Room</th>
+                                <th scope="col">Start Time</th>
+                                <th scope="col">End Time</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (dynamic i in bookingList)
+                            {
+
+                                <tr>
+                                    <td>
+                                        @i.GetType().GetProperty("RoomName").GetValue(i, null)
+                                    </td>
+                                    <td>
+                                        @i.GetType().GetProperty("StartTime").GetValue(i, null)
+
+                                    </td>
+                                    <td>
+                                        @i.GetType().GetProperty("EndTime").GetValue(i, null)
+
+                                    </td>
+
+                                    <td>
+                                        <button type="button" class="btn btn-danger" title="Cancel"
+                                                onclick="location.href='@Url.Action("CancelBooking", "Home", new { id =i.GetType().GetProperty("BookID").GetValue(i, null) })'">
+                                            Cancel
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<br /><br />
+@model Booking
+<div class="row">
+    <div class="col-10 col-lg-10  col-xl-10 mt-10">
+        <div class="card" style="min-height:100%">
+            <div class="card-header">
+                Add New Booking
+
+            </div>
+            <div class="card-body">
+                <form method="post" id="commentForm">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label">&nbsp;</label>
+                                <select class="form-select col-md-8 form-select-lg mb-3" aria-label="Default select example" id="ddl_room" asp-for="RoomID" required>
+                                    <option value="" selected>Choose Room</option>
+                                    @foreach (var j in roomList)
+                                    {
+                                        <option value=@j.ID>@j.Name ( @j.Location ) </option>
+                                    }
+
+                                </select>
+                               
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class='col-md-6'>
+                            <div class="form-group">
+                                <label class="control-label">Start Time</label>
+                                <input type="datetime-local" id="meeting_start_time" asp-for="ReservationStartTime"
+                                       name="ReservationStartTime" onchange="BindStartDate();" required>
+
+                            </div>
+                        </div>
+                        <div class='col-md-6'>
+                            <div class="form-group">
+                                <label class="control-label">End Time</label>
+                                <input type="datetime-local" id="meeting_end_time" asp-for="ReservationEndTime"
+                                       name="ReservationEndTime" required />
+
+                            </div>
+                        </div>
+                    </div>
+                    @*<input type="button" class="btn btn-primary" value="Submit" onclick="Validate();">*@
+                    <button class="btn btn-primary btn-sm" onclick="addBook();">Add New Booking</button>
+
+                </form>
+            </div>
+            
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        //Initial Assign
+        $('#bookingTbl').DataTable();
+        var dNow = new Date().toISOString().substring(0, 16);
+        $("#meeting_start_time").val(dNow);
+        $('#meeting_start_time').attr('min', dNow);
+        $("#meeting_end_time").val(dNow);
+
+        //Alert Message
+        toastr.options = {
+            tapToDismiss: true,
+            toastClass: 'toast',
+            containerId: 'toast-container',
+            iconClass: 'toast-info',
+            positionClass: 'toast-top-right',
+            timeOut: 500, // Set timeOut to 0 to make it sticky
+            titleClass: 'toast-title',
+            messageClass: 'toast-message'
+        };
+
+        if ('@message' != '') {
+            toastr["info"]('@message');
+
+
+        }
+
+    }
+    );
+
+    //Add New Booking
+    var addBook = function () {
+        if (Validate()) {
+            var e = document.getElementById("ddl_room");
+            var strUser = e.value;
+          
+            var roomID = strUser;
+            var  startTime= $("#meeting_start_time").val();
+            var  endTime= $("#meeting_end_time").val();
+
+        
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("BookRoom", "Home")',
+                data: { roomID, startTime, endTime},
+                success: function (result) {
+                    toastr["success"](" is successfully added to cart.");
+                }
+            })
+        }
+        else {
+
+            return false;
+        }
+    
+    }
+
+    function Validate() {
+        var msg = "";
+        var e = document.getElementById("ddl_room");
+        var strUser = e.value;
+        if (strUser == "") {
+            msg+="Please select Romm"; // prompt user
+           
+        }
+
+        var date1 = new Date($("#meeting_start_time").val());
+        var date2 = new Date($("#meeting_end_time").val());
+
+        if (date1.getTime() > date2.getTime()) {
+            msg+= "<br> End Time should not ealier than Start Time .";
+
+        }
+        if (msg != "") {
+            toastr["error"](msg);
+            $("#ddl_room").focus(); //set focus back to control
+            return false;
+        }
+        else
+            return true;
+    }
+
+    function BindStartDate() {
+        $('#meeting_end_time').attr('min', $("#meeting_start_time").val());
+    };
+
+</script>
