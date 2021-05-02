@@ -28,6 +28,7 @@
                             <tr>
 
                                 <th scope="col">Room</th>
+                                <th scope="col">Location</th>
                                 <th scope="col">Start Time</th>
                                 <th scope="col">End Time</th>
                                 <th></th>
@@ -37,26 +38,29 @@
                             @foreach (dynamic i in bookingList)
                             {
 
-                                <tr>
-                                    <td>
-                                        @i.GetType().GetProperty("RoomName").GetValue(i, null)
-                                    </td>
-                                    <td>
-                                        @i.GetType().GetProperty("StartTime").GetValue(i, null)
+                            <tr>
+                                <td>
+                                    @i.GetType().GetProperty("RoomName").GetValue(i, null)
+                                </td>
+                                <td>
+                                    @i.GetType().GetProperty("Location").GetValue(i, null)
+                                </td>
+                                <td>
+                                    @i.GetType().GetProperty("StartTime").GetValue(i, null)
 
-                                    </td>
-                                    <td>
-                                        @i.GetType().GetProperty("EndTime").GetValue(i, null)
+                                </td>
+                                <td>
+                                    @i.GetType().GetProperty("EndTime").GetValue(i, null)
 
-                                    </td>
+                                </td>
 
-                                    <td>
-                                        <button type="button" class="btn btn-danger" title="Cancel"
-                                                onclick="location.href='@Url.Action("CancelBooking", "Home", new { id =i.GetType().GetProperty("BookID").GetValue(i, null) })'">
-                                            Cancel
-                                        </button>
-                                    </td>
-                                </tr>
+                                <td>
+                                    <button type="button" class="btn btn-danger" title="Cancel"
+                                            onclick="location.href='@Url.Action("CancelBooking", "Home", new { id =i.GetType().GetProperty("BookID").GetValue(i, null) })'">
+                                        Cancel
+                                    </button>
+                                </td>
+                            </tr>
                             }
                         </tbody>
                     </table>

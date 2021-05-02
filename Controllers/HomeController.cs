@@ -72,7 +72,7 @@ namespace Meeting_System.Controllers
         public IActionResult CancelBooking(string id)
         {
 
-            BookingData.CancelBooking(context123, id);
+            BookingData.CancelBooking(context123, id, _logger);
             TempData["msg"] = "Cancled Successfully!";
             return RedirectToAction("Index", "Home");
         }

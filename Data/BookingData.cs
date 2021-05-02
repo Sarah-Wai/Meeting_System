@@ -10,6 +10,7 @@ namespace Meeting_System.Data
 {
     public class BookingData
     {
+        //Get ALl Active Booking List
         public static List<dynamic> GetActiveBooking(MyDBContext context123, ILogger<HomeController> logger)
         {
             logger.LogInformation("Get All Active Booking");
@@ -22,6 +23,7 @@ namespace Meeting_System.Data
                         select new
                         {
                             BookID = r.ID,
+                            Location=rd.Location,
                             RoomName = rd.Name,
                             StartTime = r.ReservationStartTime.ToString(),
                             EndTime = r.ReservationEndTime.ToString()
@@ -37,10 +39,13 @@ namespace Meeting_System.Data
             return test;
         }
 
+        //Saving Booking Data to Database
         public static string AddBooking(MyDBContext context123, Booking book, ILogger<HomeController> logger)
         {
             string log_message = "";
-            //Checking Booking Room is Available
+            //Checking Booking Room is Available 
+            //if available , save to DB and write to log file
+            //if not , return Unavailabe message to view and write to log file
             List<Booking> bookingList = context123.Bookings.ToList();
             Booking recent_booking = context123.Bookings
                             .Where(x => x.RoomID == book.RoomID &&
@@ -77,10 +82,10 @@ namespace Meeting_System.Data
             }
 
         }
-        public static bool CancelBooking(MyDBContext context123, string bookingID)
+        public static bool CancelBooking(MyDBContext context123, string bookingID, ILogger<HomeController> logger)
         {
             Booking recent_book = context123.Bookings.Where(x => x.ID == bookingID).FirstOrDefault();
-
+           
             if (recent_book != null)
             {
                 recent_book.status = false;
@@ -90,6 +95,8 @@ namespace Meeting_System.Data
             try
             {
                 context123.SaveChanges();
+                string log_message = $"{recent_book.ID} is canceled booking on {DateTime.Now}";
+                logger.LogInformation(log_message);
                 return true;
             }
             catch (Exception ex)

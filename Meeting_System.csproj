@@ -45,6 +45,7 @@
 
   <ItemGroup>
     <Folder Include="Connected Services\" />
+    <Folder Include="Logs\" />
   </ItemGroup>
 
   <ItemGroup>
