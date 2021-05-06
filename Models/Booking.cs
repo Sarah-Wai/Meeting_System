@@ -15,13 +15,5 @@ namespace Meeting_System.Models
         public DateTime ReservationStartTime { get; set; }
         public DateTime ReservationEndTime { get; set; }
     }
-    public class Booking1
-    {
-
-        public string ID { get; set; }
-
-        public string RoomID { get; set; }
-        public string status { get; set; }
-    }
-
+   
 }
