@@ -43,7 +43,7 @@ namespace Meeting_System.Controllers
 
         [HttpPost]
 
-        public IActionResult BookRoom(string roomID,string startTime,string endTime)
+        public IActionResult BookRoom(string roomID,string startTime,string endTime)  //[FromBody]Booking book
         {
             DateTime startDate = startTime != null ? Convert.ToDateTime(startTime) : DateTime.Now;
             DateTime endDate = startTime != null ? Convert.ToDateTime(endTime) : DateTime.Now;
@@ -60,7 +60,7 @@ namespace Meeting_System.Controllers
                     ReservationStartTime = startDate
 
                 };
-                
+
                 string result = BookingData.AddBooking(context123, booking, _logger);
                 TempData["msg"] = result;
             }

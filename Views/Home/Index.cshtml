@@ -164,26 +164,43 @@
         if (Validate()) {
             var e = document.getElementById("ddl_room");
             var strUser = e.value;
-          
+
             var roomID = strUser;
             var  startTime= $("#meeting_start_time").val();
             var  endTime= $("#meeting_end_time").val();
 
-        
+
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("BookRoom", "Home")',
                 data: { roomID, startTime, endTime},
                 success: function (result) {
-                    toastr["success"](" is successfully added to cart.");
+                    toastr["success"]("Booking Successfully");
                 }
             })
+            @*var model = {
+                ID :"",
+                RoomID: roomID,
+                status: true,
+                ReservationStartTime: $("#meeting_start_time").val(),
+                ReservationEndTime: $("#meeting_end_time").val(),
+
+            };
+
+            $.ajax({
+                type: "POST",
+                data: JSON.stringify(model),
+                url: '@Url.Action("BookRoom", "Home")',
+                contentType: "application/json"
+            }).done(function (res) {
+                toastr["success"]("Booking Successfully");
+            });*@
         }
         else {
 
             return false;
         }
-    
+
     }
 
     function Validate() {
@@ -192,7 +209,7 @@
         var strUser = e.value;
         if (strUser == "") {
             msg+="Please select Romm"; // prompt user
-           
+
         }
 
         var date1 = new Date($("#meeting_start_time").val());
